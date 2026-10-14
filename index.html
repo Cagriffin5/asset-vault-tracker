@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssetVault // Security & Accountability Ledger</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Main Application Grid -->
+    <main class="vault-container">
+        
+        <!-- App Sidebar Header & Controller -->
+        <aside class="vault-sidebar">
+            <header class="vault-header">
+                <h1>AssetVault<span>.</span></h1>
+                <p>Accountability & Lifecycle Tracker</p>
+            </header>
+
+            <!-- Secure Asset Input Form Component -->
+            <section class="form-section">
+                <h2>Secure Asset Log</h2>
+                <form id="asset-form">
+                    <div class="form-group">
+                        <label for="asset-name">Asset Name / Nomenclature</label>
+                        <input type="text" id="asset-name" placeholder="e.g., Tactical Comm Kit, Server Rack B" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="asset-serial">Serial Number / Tracking ID</label>
+                        <input type="text" id="asset-serial" placeholder="e.g., SN-9842A-6" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="asset-category">Classification Category</label>
+                        <select id="asset-category" required>
+                            <option value="Hardware">Hardware / Equipment</option>
+                            <option value="Communications">Communications Infrastructure</option>
+                            <option value="Software">Software & Cloud Licenses</option>
+                            <option value="Logistics">Logistics & Supply Assets</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="asset-status">Initial Lifecycle Status</label>
+                        <select id="asset-status" required>
+                            <option value="Deployed">Deployed / Active</option>
+                            <option value="In Storage">In Storage / Secure</option>
+                            <option value="Maintenance">Maintenance Required</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-lock">Commit Asset to Ledger</button>
+                </form>
+            </section>
+        </aside>
+
+        <!-- Main Workspace: Data Filters & Data Table Matrix Matrix -->
+        <section class="vault-workspace">
+            
+            <!-- Real-Time Live Status Counters -->
+            <div class="status-summary-ribbon">
+                <div class="summary-tile">Total Items: <span id="count-total">0</span></div>
+                <div class="summary-tile border-deployed">Active Deployed: <span id="count-deployed">0</span></div>
+                <div class="summary-tile border-storage">Secure Storage: <span id="count-storage">0</span></div>
+                <div class="summary-tile border-maintenance">In Maintenance: <span id="count-maintenance">0</span></div>
+            </div>
+
+            <!-- Integrated Live Query Filter Bar Component -->
+            <div class="filter-action-bar">
+                <input type="text" id="filter-search" placeholder="🔍 Search by Name or Serial Number...">
+                <select id="filter-category-select">
+                    <option value="ALL">All Classifications</option>
+                    <option value="Hardware">Hardware / Equipment</option>
+                    <option value="Communications">Communications</option>
+                    <option value="Software">Software & Licenses</option>
+                    <option value="Logistics">Logistics & Supply</option>
+                </select>
+            </div>
+
+            <!-- Live Asset Data Table Matrix Container -->
+            <div class="table-scroll-wrapper">
+                <table class="vault-table">
+                    <thead>
+                        <tr>
+                            <th>Nomenclature / Name</th>
+                            <th>Serial / ID</th>
+                            <th>Classification</th>
+                            <th>Current Status</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vault-table-body">
+                        <!-- JavaScript automatically filters and maps matching arrays here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Connect Application Engine -->
+    <script src="app.js"></script>
+</body>
+</html>
