@@ -1,118 +1,129 @@
-/**
- * AssetVault Framework Core Control Engine
- * Processes multi-tiered array lookups, calculates state aggregations, and manages data caching persistence loops.
- */
+document.addEventListener('DOMContentLoaded', () => {
+  // Application State Model Array
+  let assetLedger = [];
 
-// 1. Initialize State Architecture (Inject mock data strings if storage database returns blank)
-let assetLedger = JSON.parse(localStorage.getItem('vault_assets_data')) || [
-    { id: 1, name: "AN/PRC-117G Radio System", serial: "SN-RADIO-8841", category: "Communications", status: "Deployed" },
-    { id: 2, name: "Secure Database Server Bl. 4", serial: "SN-SVR-0024", category: "Hardware", status: "In Storage" },
-    { id: 3, name: "Enterprise QuickBooks Core Asset License", serial: "LIC-INTUIT-77X", category: "Software", status: "Deployed" },
-    { id: 4, name: "Tactical Navigation Terminal", serial: "SN-NAV-9912", category: "Communications", status: "Maintenance" }
-];
+  // DOM Component Elements Selectors
+  const assetForm = document.getElementById('asset-form');
+  const tableBody = document.getElementById('vault-table-body');
+  
+  // Metric Target Counter Selectors
+  const countTotal = document.getElementById('count-total');
+  const countDeployed = document.getElementById('count-deployed');
+  const countStorage = document.getElementById('count-storage');
+  const countMaintenance = document.getElementById('count-maintenance');
 
-// 2. Map Interface Input and Display Target Node Handles
-const form = document.getElementById('asset-form');
-const nameInput = document.getElementById('asset-name');
-const serialInput = document.getElementById('asset-serial');
-const catInput = document.getElementById('asset-category');
-const statusInput = document.getElementById('asset-status');
+  // Query Control Filter Inputs Selectors
+  const searchInput = document.getElementById('filter-search');
+  const categorySelect = document.getElementById('filter-category-select');
 
-const searchInput = document.getElementById('filter-search');
-const filterCatSelect = document.getElementById('filter-category-select');
-const tableBody = document.getElementById('vault-table-body');
+  /* -------------------------------------------------------------
+     1. Form Entry Submit Event Listener
+  ------------------------------------------------------------- */
+  if (assetForm) {
+    assetForm.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-const totalCount = document.getElementById('count-total');
-const deployedCount = document.getElementById('count-deployed');
-const storageCount = document.getElementById('count-storage');
-const maintenanceCount = document.getElementById('count-maintenance');
+      // Retrieve form values
+      const name = document.getElementById('asset-name').value.trim();
+      const serial = document.getElementById('asset-serial').value.trim();
+      const category = document.getElementById('asset-category').value;
+      const status = document.getElementById('asset-status').value;
 
-// 3. Mathematical Analytical Counts Aggregator Engine
-function calculateMetrics() {
-    totalCount.textContent = assetLedger.length;
-    deployedCount.textContent = assetLedger.filter(a => a.status === 'Deployed').length;
-    storageCount.textContent = assetLedger.filter(a => a.status === 'In Storage').length;
-    maintenanceCount.textContent = assetLedger.filter(a => a.status === 'Maintenance').length;
-}
+      // Instantiate new data record object
+      const newAsset = {
+        id: 'ASSET-' + Date.now(),
+        name,
+        serial,
+        category,
+        status
+      };
 
-// 4. Data Filter & DOM Injection Architecture Matrix
-function renderLedger() {
+      // Push record array entry, reset form inputs, and synchronize calculations
+      assetLedger.push(newAsset);
+      assetForm.reset();
+      updateApplicationPipeline();
+    });
+  }
+
+  /* -------------------------------------------------------------
+     2. Metrics Processing Calculations & Core Rendering Engine
+  ------------------------------------------------------------- */
+  function updateApplicationPipeline() {
+    renderLedgerTable();
+    calculateSummaryCounters();
+  }
+
+  function renderLedgerTable() {
     tableBody.innerHTML = '';
-    
-    // Extract evaluation criteria properties from current dynamic filters input states
+
     const query = searchInput.value.toLowerCase().trim();
-    const activeCategory = filterCatSelect.value;
+    const filterCategory = categorySelect.value;
 
-    // Filter array vectors sequentially matching multiple user parameters in parallel
-    const filteredAssets = assetLedger.filter(asset => {
-        const matchesSearch = asset.name.toLowerCase().includes(query) || asset.serial.toLowerCase().includes(query);
-        const matchesCategory = (activeCategory === 'ALL' || asset.category === activeCategory);
-        return matchesSearch && matchesCategory;
+    // Filter array pipeline matching constraints
+    const filteredRecords = assetLedger.filter(asset => {
+      const matchesSearch = asset.name.toLowerCase().includes(query) || asset.serial.toLowerCase().includes(query);
+      const matchesCategory = (filterCategory === 'ALL' || asset.category === filterCategory);
+      return matchesSearch && matchesCategory;
     });
 
-    // Loop filtered vector set to construct element objects dynamically
-    filteredAssets.forEach(asset => {
-        const row = document.createElement('tr');
-
-        // Formulate type-specific visual badge overrides
-        let tagClass = 'tag-deployed';
-        if (asset.status === 'In Storage') tagClass = 'tag-storage';
-        if (asset.status === 'Maintenance') tagClass = 'tag-maintenance';
-
-        row.innerHTML = `
-            <td style="font-weight: 600;">${asset.name}</td>
-            <td style="font-family: monospace; color: var(--text-subtle);">${asset.serial}</td>
-            <td>${asset.category}</td>
-            <td><span class="status-tag ${tagClass}">${asset.status}</span></td>
-            <td class="text-center"><button class="btn-purge" data-id="${asset.id}">De-Authorize</button></td>
-        `;
-
-        // Bind unique removal handlers directly to action buttons
-        row.querySelector('.btn-purge').addEventListener('click', (e) => {
-            purgeAsset(parseInt(e.target.getAttribute('data-id')));
-        });
-
-        tableBody.appendChild(row);
-    });
-}
-
-// 5. Commit Additions Event Interceptor Handle Loop
-form.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const newAsset = {
-        id: Date.now(),
-        name: nameInput.value.trim(),
-        serial: serialInput.value.trim().toUpperCase(),
-        category: catInput.value,
-        status: statusInput.value
-    };
-
-    assetLedger.push(newAsset);
-    syncState();
-    form.reset();
-    nameInput.focus();
-});
-
-// 6. Delete/Purge Asset Routine Hook
-function purgeAsset(assetId) {
-    if (confirm("Are you sure you want to de-authorize this security asset from tracking vectors?")) {
-        assetLedger = assetLedger.filter(a => a.id !== assetId);
-        syncState();
+    if (filteredRecords.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--text-muted); padding: 32px;">No matching assets committed to the ledger matrix.</td></tr>`;
+      return;
     }
-}
 
-// 7. Global Persistence Synchronizer Hub
-function syncState() {
-    localStorage.setItem('vault_assets_data', JSON.stringify(assetLedger));
-    calculateMetrics();
-    renderLedger();
-}
+    // Build row layout markup fragments natively
+    filteredRecords.forEach(asset => {
+      const row = document.createElement('tr');
+      
+      // Determine corresponding badge status class variant
+      let badgeClass = 'badge-storage';
+      if (asset.status === 'Deployed') badgeClass = 'badge-deployed';
+      if (asset.status === 'Maintenance') badgeClass = 'badge-maintenance';
 
-// 8. Dynamic Reactive Input Change Event Subscriptions
-searchInput.addEventListener('input', renderLedger);
-filterCatSelect.addEventListener('change', renderLedger);
+      row.innerHTML = `
+        <td><strong>${escapeHTML(asset.name)}</strong></td>
+        <td style="font-family: monospace; letter-spacing: 0.5px;">${escapeHTML(asset.serial)}</td>
+        <td>${asset.category}</td>
+        <td><span class="badge ${badgeClass}">${asset.status}</span></td>
+        <td class="text-center">
+          <button class="btn-purge" data-id="${asset.id}" aria-label="Purge tracking record for ${escapeHTML(asset.name)}">Purge</button>
+        </td>
+      `;
 
-// 9. Root Framework Bootstrap Call Run Trigger
-calculateMetrics();
-renderLedger();
+      // Attach runtime event trigger to the dynamic list row removal action target button
+      row.querySelector('.btn-purge').addEventListener('click', (e) => {
+        const targetID = e.target.getAttribute('data-id');
+        assetLedger = assetLedger.filter(item => item.id !== targetID);
+        updateApplicationPipeline();
+      });
+
+      tableBody.appendChild(row);
+    });
+  }
+
+  function calculateSummaryCounters() {
+    let total = assetLedger.length;
+    let deployed = assetLedger.filter(a => a.status === 'Deployed').length;
+    let storage = assetLedger.filter(a => a.status === 'In Storage').length;
+    let maintenance = assetLedger.filter(a => a.status === 'Maintenance').length;
+
+    // Render calculations updates safely down to individual summary panels
+    countTotal.textContent = total;
+    countDeployed.textContent = deployed;
+    countStorage.textContent = storage;
+    countMaintenance.textContent = maintenance;
+  }
+
+  /* -------------------------------------------------------------
+     3. Search Filter Logic Pipeline Hooks
+  ------------------------------------------------------------- */
+  if (searchInput) searchInput.addEventListener('input', renderLedgerTable);
+  if (categorySelect) categorySelect.addEventListener('change', renderLedgerTable);
+
+  /* Helper function protecting input fields against cross-site scripting strings */
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
+});

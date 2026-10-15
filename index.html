@@ -8,10 +8,10 @@
 </head>
 <body>
 
-    <!-- Main Application Grid -->
+    <!-- Main Dashboard Grid Layout Layout Workspace -->
     <main class="vault-container">
         
-        <!-- App Sidebar Header & Controller -->
+        <!-- App Sidebar Header & Controller Component -->
         <aside class="vault-sidebar">
             <header class="vault-header">
                 <h1>AssetVault<span>.</span></h1>
@@ -19,8 +19,8 @@
             </header>
 
             <!-- Secure Asset Input Form Component -->
-            <section class="form-section">
-                <h2>Secure Asset Log</h2>
+            <section class="form-section" aria-labelledby="form-title">
+                <h2 id="form-title">Secure Asset Log</h2>
                 <form id="asset-form">
                     <div class="form-group">
                         <label for="asset-name">Asset Name / Nomenclature</label>
@@ -56,31 +56,37 @@
             </section>
         </aside>
 
-        <!-- Main Workspace: Data Filters & Data Table Matrix Matrix -->
-        <section class="vault-workspace">
+        <!-- Main Workspace: Data Filters & Data Table Matrix -->
+        <section class="vault-workspace" aria-label="Asset Ledger Management Console">
             
-            <!-- Real-Time Live Status Counters -->
-            <div class="status-summary-ribbon">
+            <!-- Real-Time Live Status Counters (Announces metric modifications instantly to screen readers) -->
+            <div class="status-summary-ribbon" aria-live="polite">
                 <div class="summary-tile">Total Items: <span id="count-total">0</span></div>
                 <div class="summary-tile border-deployed">Active Deployed: <span id="count-deployed">0</span></div>
                 <div class="summary-tile border-storage">Secure Storage: <span id="count-storage">0</span></div>
                 <div class="summary-tile border-maintenance">In Maintenance: <span id="count-maintenance">0</span></div>
             </div>
 
-            <!-- Integrated Live Query Filter Bar Component -->
-            <div class="filter-action-bar">
-                <input type="text" id="filter-search" placeholder="🔍 Search by Name or Serial Number...">
-                <select id="filter-category-select">
-                    <option value="ALL">All Classifications</option>
-                    <option value="Hardware">Hardware / Equipment</option>
-                    <option value="Communications">Communications</option>
-                    <option value="Software">Software & Licenses</option>
-                    <option value="Logistics">Logistics & Supply</option>
-                </select>
-            </div>
+            <!-- Integrated Live Query Filter Bar Component (Semantic search wrapping landmark) -->
+            <search class="filter-action-bar">
+                <div class="search-input-wrapper">
+                    <label for="filter-search" class="sr-only">Search assets by designation name or tracking identifier serial number</label>
+                    <input type="text" id="filter-search" placeholder="🔍 Search by Name or Serial Number...">
+                </div>
+                <div class="filter-select-wrapper">
+                    <label for="filter-category-select" class="sr-only">Filter asset entries by hardware asset classification criteria</label>
+                    <select id="filter-category-select">
+                        <option value="ALL">All Classifications</option>
+                        <option value="Hardware">Hardware / Equipment</option>
+                        <option value="Communications">Communications</option>
+                        <option value="Software">Software & Licenses</option>
+                        <option value="Logistics">Logistics & Supply</option>
+                    </select>
+                </div>
+            </search>
 
             <!-- Live Asset Data Table Matrix Container -->
-            <div class="table-scroll-wrapper">
+            <div class="table-scroll-wrapper" tabindex="0" aria-label="Active Ledger Records Matrix (Scrollable display)">
                 <table class="vault-table">
                     <thead>
                         <tr>
@@ -92,7 +98,7 @@
                         </tr>
                     </thead>
                     <tbody id="vault-table-body">
-                        <!-- JavaScript automatically filters and maps matching arrays here -->
+                        <!-- JavaScript automatically filters and maps arrays here -->
                     </tbody>
                 </table>
             </div>
@@ -100,7 +106,6 @@
 
     </main>
 
-    <!-- Connect Application Engine -->
     <script src="app.js"></script>
 </body>
 </html>
